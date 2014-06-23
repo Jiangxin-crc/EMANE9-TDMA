@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mac SYSTEM "file://@datadir@/dtd/mac.dtd">
+<mac name="TDMA MAC" library="tdmamaclayer">
+  <param name="enablepromiscuousmode" value="off"/>
+  <param name="datarate"              value="1M"/>
+  <param name="jitter"                value="0"/>
+  <param name="delay"                 value="0"/>
+  <param name="flowcontrolenable"     value="off"/>
+  <param name="flowcontroltokens"     value="10"/>
+  <param name="pcrcurveuri"
+         value="file://@datadir@/xml/models/mac/tdma/tdmapcr.xml"/>
+  <param name="fragmentationenable"   value="off"/>
+  <param name="aggregationenable"     value="off"/>
+  <param name="priorityqos"           value="off"/>
+  <param name="qossetting"            value=""/>
+  <param name="macheaderlen"          value="4"/>
+  <param name="payloadlenadj"         value="0"/>
+  <param name="sendonlyatbegin"       value="on"/>
+  <param name="macsubid" 	      value="1"/>
+  <param name="timeslotlength"        value="50000"/>
+  <param name="guardtime"             value="1000"/>
+  <param name="timeslotnum"           value="2"/>  
+  <param name="nodenum"               value="2"/>
+  <param name="slotmap"               value=""/>   
+  <param name="dynamiclength"         value="0"/>   
+</mac>

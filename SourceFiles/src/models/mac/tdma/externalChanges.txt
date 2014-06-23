@@ -1,0 +1,22 @@
+
+Modified external files -----------------------------
+	configure.ac
+	include/emane/events/eventids.h
+	src/libemane/nemmanagerimpl.h
+	src/libemane/nemmanagerimpl.cc
+	src/libemane/Makefile.am
+	src/models/mac/Makefile.am
+	dtd/Makefile.am
+
+
+New external files  ---------------------------------
+	dtd/tdmapcr.dtd
+	debian/emane-model-tdma.install
+	include/emane/events/tdmaevent.h
+	src/libemane/tdmaevent.cc
+	src/libemane/tdmarevent.proto
+	src/libemane/tdmabevent.proto
+	src/libemane/tdmamanager.cc
+	src/libemane/tdmamanager.h
+
+
