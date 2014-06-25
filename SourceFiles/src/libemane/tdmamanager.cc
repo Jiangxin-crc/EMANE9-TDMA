@@ -388,7 +388,7 @@ void
 EMANE::Application::TDMASlotMap::free(EMANE::NEMId nodeid)
 {
   for (int i=0;i< slot_a_cycle_;i++) {
-    if (used_slot_[i] = nodeid) {
+    if (used_slot_[i] == nodeid) {
 	avai_slot_[i] = nodeid;
     }
   }
