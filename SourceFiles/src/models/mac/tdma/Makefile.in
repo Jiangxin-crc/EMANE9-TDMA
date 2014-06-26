@@ -84,7 +84,11 @@ am_libtdmamaclayer_la_OBJECTS = libtdmamaclayer_la-pcrmanager.lo \
 	libtdmamaclayer_la-maclayer.lo \
 	libtdmamaclayer_la-downstreamqueue.lo \
 	libtdmamaclayer_la-fragmentmgr.lo \
-	libtdmamaclayer_la-downstreammgr.lo
+	libtdmamaclayer_la-downstreammgr.lo \
+	libtdmamaclayer_la-tdmabevent.pb.lo \
+	libtdmamaclayer_la-tdmarevent.pb.lo \
+	libtdmamaclayer_la-tdmaevent.lo \
+	libtdmamaclayer_la-tdmamanager.lo
 libtdmamaclayer_la_OBJECTS = $(am_libtdmamaclayer_la_OBJECTS)
 libtdmamaclayer_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -266,7 +270,11 @@ libtdmamaclayer_la_SOURCES = \
  maclayer.cc			\
  downstreamqueue.cc		\
  fragmentmgr.cc			\
- downstreammgr.cc
+ downstreammgr.cc		\
+ tdmabevent.pb.cc		\
+ tdmarevent.pb.cc		\
+ tdmaevent.cc			\
+ tdmamanager.cc
 
 EXTRA_DIST = \
  pcrmanager.h                   \
@@ -278,14 +286,21 @@ EXTRA_DIST = \
  maclayer.h			\
  downstreamqueue.h		\
  fragmentmgr.h			\
- downstreammgr.h
+ downstreammgr.h		\
+ tdmabevent.proto		\
+ tdmarevent.proto		\
+ tdmamanager.h
 
 BUILT_SOURCES = \
  tdmanem.xml                   	\
  tdmamac.xml                   	\
  tdmapcr.xml                   	\
  tdmamacheader.pb.cc           	\
- tdmamacheader.pb.h		
+ tdmamacheader.pb.h		\
+ tdmabevent.pb.cc		\
+ tdmabevent.pb.h		\
+ tdmarevent.pb.cc		\
+ tdmarevent.pb.h		
 
 libtdmamaclayer_la_LIBADD = \
  $(WIN32_EXTRA_LIBADD)        
@@ -378,8 +393,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdmamaclayer_la-fragmentmgr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdmamaclayer_la-maclayer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdmamaclayer_la-pcrmanager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdmamaclayer_la-tdmabevent.pb.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdmamaclayer_la-tdmaevent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdmamaclayer_la-tdmamacheader.pb.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdmamaclayer_la-tdmamacheadermessage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdmamaclayer_la-tdmamanager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdmamaclayer_la-tdmarevent.pb.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -450,6 +469,34 @@ libtdmamaclayer_la-downstreammgr.lo: downstreammgr.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='downstreammgr.cc' object='libtdmamaclayer_la-downstreammgr.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdmamaclayer_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libtdmamaclayer_la-downstreammgr.lo `test -f 'downstreammgr.cc' || echo '$(srcdir)/'`downstreammgr.cc
+
+libtdmamaclayer_la-tdmabevent.pb.lo: tdmabevent.pb.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdmamaclayer_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libtdmamaclayer_la-tdmabevent.pb.lo -MD -MP -MF $(DEPDIR)/libtdmamaclayer_la-tdmabevent.pb.Tpo -c -o libtdmamaclayer_la-tdmabevent.pb.lo `test -f 'tdmabevent.pb.cc' || echo '$(srcdir)/'`tdmabevent.pb.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libtdmamaclayer_la-tdmabevent.pb.Tpo $(DEPDIR)/libtdmamaclayer_la-tdmabevent.pb.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tdmabevent.pb.cc' object='libtdmamaclayer_la-tdmabevent.pb.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdmamaclayer_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libtdmamaclayer_la-tdmabevent.pb.lo `test -f 'tdmabevent.pb.cc' || echo '$(srcdir)/'`tdmabevent.pb.cc
+
+libtdmamaclayer_la-tdmarevent.pb.lo: tdmarevent.pb.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdmamaclayer_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libtdmamaclayer_la-tdmarevent.pb.lo -MD -MP -MF $(DEPDIR)/libtdmamaclayer_la-tdmarevent.pb.Tpo -c -o libtdmamaclayer_la-tdmarevent.pb.lo `test -f 'tdmarevent.pb.cc' || echo '$(srcdir)/'`tdmarevent.pb.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libtdmamaclayer_la-tdmarevent.pb.Tpo $(DEPDIR)/libtdmamaclayer_la-tdmarevent.pb.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tdmarevent.pb.cc' object='libtdmamaclayer_la-tdmarevent.pb.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdmamaclayer_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libtdmamaclayer_la-tdmarevent.pb.lo `test -f 'tdmarevent.pb.cc' || echo '$(srcdir)/'`tdmarevent.pb.cc
+
+libtdmamaclayer_la-tdmaevent.lo: tdmaevent.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdmamaclayer_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libtdmamaclayer_la-tdmaevent.lo -MD -MP -MF $(DEPDIR)/libtdmamaclayer_la-tdmaevent.Tpo -c -o libtdmamaclayer_la-tdmaevent.lo `test -f 'tdmaevent.cc' || echo '$(srcdir)/'`tdmaevent.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libtdmamaclayer_la-tdmaevent.Tpo $(DEPDIR)/libtdmamaclayer_la-tdmaevent.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tdmaevent.cc' object='libtdmamaclayer_la-tdmaevent.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdmamaclayer_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libtdmamaclayer_la-tdmaevent.lo `test -f 'tdmaevent.cc' || echo '$(srcdir)/'`tdmaevent.cc
+
+libtdmamaclayer_la-tdmamanager.lo: tdmamanager.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdmamaclayer_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libtdmamaclayer_la-tdmamanager.lo -MD -MP -MF $(DEPDIR)/libtdmamaclayer_la-tdmamanager.Tpo -c -o libtdmamaclayer_la-tdmamanager.lo `test -f 'tdmamanager.cc' || echo '$(srcdir)/'`tdmamanager.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libtdmamaclayer_la-tdmamanager.Tpo $(DEPDIR)/libtdmamaclayer_la-tdmamanager.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tdmamanager.cc' object='libtdmamaclayer_la-tdmamanager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdmamaclayer_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libtdmamaclayer_la-tdmamanager.lo `test -f 'tdmamanager.cc' || echo '$(srcdir)/'`tdmamanager.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -679,6 +726,12 @@ tdmapcr.xml: tdmapcr.xml.in
 	$(edit) $< > $@
 
 tdmamacheader.pb.cc tdmamacheader.pb.h: tdmamacheader.proto 
+	protoc -I=. --cpp_out=. $<
+
+tdmabevent.pb.cc tdmabevent.pb.h: tdmabevent.proto
+	protoc -I=. --cpp_out=. $<
+
+tdmarevent.pb.cc tdmarevent.pb.h: tdmarevent.proto
 	protoc -I=. --cpp_out=. $<
 
 clean-local:

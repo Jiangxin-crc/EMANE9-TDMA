@@ -52,6 +52,9 @@
 
 #include <sstream>
 
+std::mutex mgrLock_;
+EMANE::Models::TDMA::TDMAManager * tdmaManager_ = NULL;
+
 namespace
 {
   const char * pzLayerName{"TdmaMACLayer"};
@@ -130,6 +133,8 @@ EMANE::Models::TDMA::MACLayer::MACLayer(NEMId id,
   lastReqSlotNum_(0),
   usedSlotNum_(0),
   last_dyn_cycid_(0),
+  eventLock_{},
+  mgrLock_{},
   fJitterSeconds_{},
   slot_map_str_{""}
 {}
@@ -146,7 +151,6 @@ EMANE::Models::TDMA::MACLayer::initialize(Registrar & registrar)
                           id_,
                           pzLayerName,
                           __func__);
-
 
   auto & configRegistrar = registrar.configurationRegistrar();
 
@@ -351,6 +355,7 @@ EMANE::Models::TDMA::MACLayer::initialize(Registrar & registrar)
 
    auto & eventRegistrar = registrar.eventRegistrar();
    eventRegistrar.registerEvent(EMANE::Models::TDMA::TdmaBEvent::IDENTIFIER);
+   eventRegistrar.registerEvent(EMANE::Models::TDMA::TdmaREvent::IDENTIFIER);
 
 }
 
@@ -808,7 +813,6 @@ EMANE::Models::TDMA::MACLayer::start()
 
 }
 
-
 void 
 EMANE::Models::TDMA::MACLayer::postStart()
 {
@@ -818,6 +822,17 @@ EMANE::Models::TDMA::MACLayer::postStart()
                           id_,
                           pzLayerName,
                           __func__);
+
+  mgrLock_.lock();
+  if (tdmaManager_ == NULL) {
+     tdmaManager_ = new EMANE::Models::TDMA::TDMAManager{pPlatformService_};
+     tdmaManager_->initialize(std::auto_ptr<EMANE::Models::TDMA::MACLayer>{this},id_);
+  }
+  if (tdmaManager_->isInited() == false) {
+      sleep(1.2);
+  }
+  mgrLock_.unlock();
+
 
   // check flow control enabled 
   if(bFlowControlEnable_)
@@ -899,7 +914,7 @@ EMANE::Models::TDMA::MACLayer::sendInitRevent()
       }
   }
   EMANE::Models::TDMA::TdmaREvent event(id_,EMANE::Models::TDMA::TDMA_TYPE_NEMINIT,smap,macsubid_,slotNumInCycle_,dynamic_?timeSlotLen_:0);
-  pPlatformService_->eventService().sendEvent(0,event);
+  proxyEvent(id_,0,event);
   nemREventId_ = 0;
   LOGGER_STANDARD_LOGGING(pPlatformService_->logService(),
                           DEBUG_LEVEL,
@@ -1576,7 +1591,8 @@ EMANE::Models::TDMA::MACLayer::processDownstreamPacket(DownstreamPacket & pkt,
 	 unsigned char* buffer = new unsigned char[pkt.length()];
 	 getPktBuf(pkt.getVectorIO(),buffer);
 	 memcpy((void *)&ipHeader,(void *)(buffer+14),sizeof(ipHeader));
-	priority = priority_[ipHeader.tos&IPTOS_TOS_MASK]>0?0:1;
+	priority = priority_[ipHeader.tos&IPTOS_TOS_MASK];
+	if (priority>3) priority = 3;
 	delete buffer;
   }
 
@@ -1669,11 +1685,11 @@ EMANE::Models::TDMA::MACLayer::dynamicSlot(TimePoint)
       if (needslotn>0) {
 	EMANE::Models::TDMA::TdmaREvent event(id_,EMANE::Models::TDMA::TDMA_TYPE_REQ_SLOT,
 		"",macsubid_,needslotn,dynamicLen_);
-	pPlatformService_->eventService().sendEvent(0,event);
+	proxyEvent(id_,0,event);
       } else {
 	EMANE::Models::TDMA::TdmaREvent event(id_,EMANE::Models::TDMA::TDMA_TYPE_FREE_SLOT,
 		"",macsubid_,slotNumInCycle_,dynamicLen_);
-	pPlatformService_->eventService().sendEvent(0,event);
+	proxyEvent(id_,0,event);
       }
     }
     return true;
@@ -1684,7 +1700,6 @@ EMANE::Models::TDMA::MACLayer::handleDownstreamQueueEntry(TimePoint sot)
 {
   // previous end-of-transmission time
   TimePoint now = Clock::now();
-
   // if not the owner of current timeslot, wait to next timeslot
   std::uint64_t nowus = (now).time_since_epoch().count()+50;
   std::uint64_t cycleid = (nowus - tdmaBaseTime_)/(dynamicLen_+timeSlotLen_*slotNumInCycle_);
@@ -2080,10 +2095,10 @@ EMANE::Models::TDMA::MACLayer::checkPOR(float fSINR, size_t packetSize, std::uin
 
 /** [timerservice-processtimedevent-snippet] */ 
 void 
-EMANE::Models::TDMA::MACLayer::processTimedEvent(TimerEventId,
-                                                   const TimePoint &,
-                                                   const TimePoint &,
-                                                   const TimePoint &,
+EMANE::Models::TDMA::MACLayer::processTimedEvent(TimerEventId tid,
+                                                   const TimePoint &a,
+                                                   const TimePoint &b,
+                                                   const TimePoint &c,
                                                    const void * arg)
 {
 /*
@@ -2095,12 +2110,36 @@ EMANE::Models::TDMA::MACLayer::processTimedEvent(TimerEventId,
                          __func__, 
                          eventid);
 */
-      auto pCallBack = reinterpret_cast<const std::function<bool()> *>(arg);
+   auto pCallBack = reinterpret_cast<const std::function<bool()> *>(arg);
+   if (pCallBack != NULL)
+   {
       if((*pCallBack)())
         {
           delete pCallBack;
         }
+   }
+   else tdmaManager_->processTimedEvent(tid,a,b,c,arg);
 }
+
+void 
+EMANE::Models::TDMA::MACLayer::proxyEvent (NEMId from, NEMId nemId, Event &event)
+{
+  pPlatformService_->eventService().sendEvent(nemId,event);
+
+  if (id_ == tdmaManager_->getPid()) {
+    if (from==0) {
+	// tdma manager
+	if (event.getEventId() == EMANE::Models::TDMA::TdmaBEvent::IDENTIFIER)
+		processEvent(event.getEventId(),event.serialize());
+    }
+    else {
+	mgrLock_.lock();
+	tdmaManager_->processEventTDMA(event.getEventId(),event.serialize());
+	mgrLock_.unlock();
+    }
+  }
+}
+
 /** [timerservice-processtimedevent-snippet] */ 
 void
 EMANE::Models::TDMA::MACLayer::processEvent(const EventId & eventId,
@@ -2117,6 +2156,18 @@ EMANE::Models::TDMA::MACLayer::processEvent(const EventId & eventId,
   // check event id
   switch(eventId)
     {
+    case EMANE::Models::TDMA::TdmaREvent::IDENTIFIER:
+	// this is only for tdma manager
+      {
+	if (tdmaManager_!=NULL) {
+	   if (id_ == tdmaManager_->getPid()) {
+		mgrLock_.lock();
+		tdmaManager_->processEventTDMA(eventId,serialization);
+		mgrLock_.unlock();
+	   }
+	}
+      }
+      break;
     case EMANE::Models::TDMA::TdmaBEvent::IDENTIFIER:
       {
 	eventLock_.lock();

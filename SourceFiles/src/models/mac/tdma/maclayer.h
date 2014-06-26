@@ -40,7 +40,6 @@
 #include "emane/neighbormetricmanager.h"
 #include "emane/queuemetricmanager.h"
 #include "emane/statisticnumeric.h"
-#include "emane/events/tdmaevent.h"
 #include "emane/events/location.h"
 #include "emane/events/locationevent.h"
 #include "emane/position.h"
@@ -51,12 +50,14 @@
 #include "emane/utils/randomnumberdistribution.h"
 #include "emane/utils/commonlayerstatistics.h"
 
+#include "tdmaevent.h"
 #include "downstreamqueue.h"
 #include "pcrmanager.h"
 #include "fragmentmgr.h"
 
 #include <memory>
 #include <netinet/ip.h>
+#include "tdmamanager.h"
 
 #include <iostream>
 #include <ctime>
@@ -121,6 +122,8 @@ namespace EMANE
                                const void * arg) override;
         void processConfiguration(const ConfigurationUpdate & update) override;
 
+        void proxyEvent (NEMId from, NEMId nemId, Event &event);
+
       private:
         /**
          *
@@ -128,6 +131,7 @@ namespace EMANE
          *
          */
         static const RegistrationId type_ = REGISTERED_EMANE_MAC_TDMA;
+
         std::uint64_t 		u64TxSequenceNumber_;
         FlowControlManager 	flowControlManager_;
         PCRManager		pcrManager_;
@@ -166,6 +170,7 @@ namespace EMANE
 	std::uint64_t	last_dyn_cycid_;
 
 	std::mutex eventLock_;
+	std::mutex mgrLock_;
 
         // config items
         bool 		bPromiscuousMode_;
@@ -193,7 +198,6 @@ namespace EMANE
 	std::uint16_t   payloadadjustlen_;
 	Microseconds  	dynamicLength_;
 	std::uint64_t  	dynamicLen_;
-
 
 	// functions
 

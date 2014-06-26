@@ -20,7 +20,6 @@
   <param name="timeslotlength"        value="50000"/>
   <param name="guardtime"             value="1000"/>
   <param name="timeslotnum"           value="2"/>  
-  <param name="nodenum"               value="2"/>
   <param name="slotmap"               value=""/>   
   <param name="dynamiclength"         value="0"/>   
 </mac>

@@ -13,7 +13,11 @@ libtdmamaclayer_la_SOURCES =   	\
  maclayer.cc			\
  downstreamqueue.cc		\
  fragmentmgr.cc			\
- downstreammgr.cc
+ downstreammgr.cc		\
+ tdmabevent.pb.cc		\
+ tdmarevent.pb.cc		\
+ tdmaevent.cc			\
+ tdmamanager.cc
 
 EXTRA_DIST=                     \
  pcrmanager.h                   \
@@ -25,14 +29,21 @@ EXTRA_DIST=                     \
  maclayer.h			\
  downstreamqueue.h		\
  fragmentmgr.h			\
- downstreammgr.h
+ downstreammgr.h		\
+ tdmabevent.proto		\
+ tdmarevent.proto		\
+ tdmamanager.h
 
 BUILT_SOURCES =              	\
  tdmanem.xml                   	\
  tdmamac.xml                   	\
  tdmapcr.xml                   	\
  tdmamacheader.pb.cc           	\
- tdmamacheader.pb.h		
+ tdmamacheader.pb.h		\
+ tdmabevent.pb.cc		\
+ tdmabevent.pb.h		\
+ tdmarevent.pb.cc		\
+ tdmarevent.pb.h		
 
 libtdmamaclayer_la_LIBADD=     \
  $(WIN32_EXTRA_LIBADD)        
@@ -55,6 +66,12 @@ tdmapcr.xml: tdmapcr.xml.in
 	$(edit) $< > $@
 
 tdmamacheader.pb.cc tdmamacheader.pb.h: tdmamacheader.proto 
+	protoc -I=. --cpp_out=. $<
+
+tdmabevent.pb.cc tdmabevent.pb.h: tdmabevent.proto
+	protoc -I=. --cpp_out=. $<
+
+tdmarevent.pb.cc tdmarevent.pb.h: tdmarevent.proto
 	protoc -I=. --cpp_out=. $<
 
 clean-local:
